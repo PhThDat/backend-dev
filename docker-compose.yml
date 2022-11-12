@@ -1,0 +1,31 @@
+version: '3.9'
+networks:
+  backend:
+    external: true
+services:
+  backend:
+    image: dev-env:latest
+    container_name: backend-cs
+    tty: true
+    stdin_open: true
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/home/backend
+    depends_on:
+      - pgsql
+    networks:
+      - backend
+  pgsql:
+    image: postgres:latest
+    container_name: pgsql-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=dat
+      - POSTGRES_PASSWORD=for-Thu
+      - POSTGRES_DB=db
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - backend
