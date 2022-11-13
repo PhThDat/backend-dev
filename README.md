@@ -13,5 +13,13 @@
 - $ cd home/backend
 - $ dotnet run
 
+# What are the URLs?
+## Default static page:
+127.0.0.1:4000
+## Signing up:
+127.0.0.1:4000/user/signup/
+## Signing in:
+127.0.0.1:4000/user/signin/
+
 ### Default webpage port:
 4000
