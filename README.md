@@ -14,12 +14,9 @@
 - $ dotnet run
 
 # What are the URLs?
-## Default static page:
+### Default static page:
 127.0.0.1:4000
-## Signing up:
+### Signing up:
 127.0.0.1:4000/user/signup/
-## Signing in:
+### Signing in:
 127.0.0.1:4000/user/signin/
-
-### Default webpage port:
-4000
