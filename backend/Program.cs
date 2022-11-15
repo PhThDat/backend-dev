@@ -12,6 +12,7 @@ class Program
         {
             new HomePageListener(4000),
             new SignInListener(4000),
+            new SignUpListener(4000),
             new JavaScriptApiListener(4000),
         };
 

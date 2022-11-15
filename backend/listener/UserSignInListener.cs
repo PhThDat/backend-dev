@@ -9,5 +9,9 @@ class SignInListener : Listener
         => htmlForm = File.ReadAllText("wwwroot/html/sign-in.html");
     protected override void HandleGET(HttpListenerContext context)
         => Respond(context, htmlForm);
-    protected override void HandlePOST(HttpListenerContext context) {}
+    protected override void HandlePOST(HttpListenerContext context)
+    {
+        HttpListenerRequest req = context.Request;
+        
+    }
 }
