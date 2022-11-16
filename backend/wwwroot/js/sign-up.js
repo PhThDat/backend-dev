@@ -14,8 +14,11 @@ btn.addEventListener("click", async () => {
                 method: "POST",
                 body: JSON.stringify({username: unameInp.value, email: emailInp.value, password: encryptedPw}),
             });
-
-        alert(await req.text());
+        
+        var body = await req.text();
+        if (req.status == 409) 
+            alert(body);
+        else window.open(body, "_self");
     }
     else alert("Please fill the form");
 });

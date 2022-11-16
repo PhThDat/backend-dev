@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace BackEndCSharp.Model;
+namespace BackEndCSharp.Net;
 
 abstract class Listener
 {

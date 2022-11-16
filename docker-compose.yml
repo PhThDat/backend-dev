@@ -1,4 +1,12 @@
 version: '3.9'
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/14
+          gateway: 172.20.0.1
+
 services:
   backend:
     image: ptdat11/dev-env:latest
@@ -11,6 +19,9 @@ services:
       - ./backend:/home/backend
     depends_on:
       - pgsql
+    networks:
+      backend:
+        ipv4_address: 172.20.0.3
   pgsql:
     image: postgres:latest
     container_name: pgsql-db
@@ -22,3 +33,6 @@ services:
       - POSTGRES_DB=db
     volumes:
       - ./db:/var/lib/postgresql/data
+    networks:
+      backend:
+        ipv4_address: 172.20.0.2

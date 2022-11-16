@@ -5,15 +5,15 @@ namespace BackEndCSharp.Db;
 
 class AccountDb : IDisposable
 {
-    private NpgsqlConnection connection;
-    public string TableName;
-    public AccountDb()
+    private static NpgsqlConnection connection;
+    public static string TableName;
+    static AccountDb()
     {
         TableName = "user_account";
-        connection = new NpgsqlConnection("Server=172.22.0.2;Port=5432;Username=dat;Password=for-Thu;Database=db");
+        connection = new NpgsqlConnection("Server=172.20.0.2;Port=5432;Username=dat;Password=for-Thu;Database=db");
         connection.Open();
     }
-    public bool UsernameExists(string uname)
+    public static bool UsernameExists(string uname)
     {
         string cmdText = $"SELECT username FROM {TableName} WHERE username = '{uname}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
@@ -23,14 +23,14 @@ class AccountDb : IDisposable
 
         return reader.HasRows;
     }
-    public void AddAccount(string username, string email, string encryptedPw)
+    public static void AddAccount(string username, string email, string encryptedPw)
     {
         string cmdText = $"INSERT INTO {TableName} VALUES ('{username}', '{email}', '{encryptedPw}')";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
         cmd.ExecuteNonQueryAsync();
     }
-    public void AddAccount(UserAccount user) => AddAccount(user.Username, user.Email, user.Password);
-    public bool AuthenticateAccount(string username, string encryptedPw)
+    public static void AddAccount(UserAccount user) => AddAccount(user.Username, user.Email, user.Password);
+    public static bool AuthenticateAccount(string username, string encryptedPw)
     {
         string cmdText = $"SELECT password FROM {TableName} WHERE username = '{username}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
