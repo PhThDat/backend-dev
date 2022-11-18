@@ -1,8 +1,10 @@
 # PtDat's back-end application
+An application written in .NET C#, utilizing PostgreSQL to store data.
 
 # What can this application do?
 - Serving static webpages
 - GET/POST HTTP API
+- HTTP authorization using JWT
 
 # How to operate this application?
 1. Make sure Docker is installed on your machine

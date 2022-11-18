@@ -15,10 +15,12 @@ btn.addEventListener("click", async () => {
                 body: JSON.stringify({username: unameInp.value, email: emailInp.value, password: encryptedPw}),
             });
         
-        var body = await req.text();
-        if (req.status == 409) 
-            alert(body);
-        else window.open(body, "_self");
+        var reader = new FileReader();
+        reader.readAsDataURL(await req.blob()); 
+        reader.onloadend = () => {
+            var base64data = reader.result;
+            localStorage.setItem("jwt", base64data.slice(base64data.length - 44));
+        }
     }
     else alert("Please fill the form");
 });

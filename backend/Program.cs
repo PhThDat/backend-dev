@@ -6,7 +6,7 @@ namespace BackEndCSharp;
 
 class Program
 {
-    static void Main()
+    static async Task Main()
     {
         Console.WriteLine("Server is up");
         List<Listener> listeners = new List<Listener>()

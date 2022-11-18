@@ -22,16 +22,11 @@ class SignInListener : Listener
 
         if (AccountDb.AuthenticateAccount(namePwPair[0], namePwPair[1]))
         {
-            Respond(context, "http://127.0.0.1:4000/");
+            Respond(context, "http://127.0.0.1:4000/", 200);
         }
         else 
         {
-            context.Response.StatusCode = 401;
-            Respond(context, "Incorrect username or password");
+            Respond(context, "Incorrect username or password", 401);
         }
-    }
-    private string HtmlGenerator(string username)
-    {
-        return $"<h1>Hello {username}</h1><br><p>I wish to take care of Thu <333</p>";
     }
 }

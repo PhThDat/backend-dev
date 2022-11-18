@@ -21,13 +21,18 @@ class SignUpListener : Listener
 
         if (AccountDb.UsernameExists(newAccount.Username))
         {
-            context.Response.StatusCode = 409;
-            Respond(context, "Username not available");
+            Respond(context, "Username not available", 409);
         }
         else
         {
+            bool successful;
+            byte[] jwtKey = null;
             AccountDb.AddAccount(newAccount);
-            Respond(context, "http://127.0.0.1:4000/");
+            do {
+                jwtKey = JWT.RandomKey();
+                successful = AccountDb.AddJWTKey(newAccount.Username, jwtKey);
+            } while (!successful);
+            Respond(context, jwtKey, 201);
         }
 
         reader.Close();
