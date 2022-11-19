@@ -10,7 +10,7 @@ class JavaScriptApiListener : Listener
         try
         {
             string jsText = File.ReadAllText("wwwroot/js/" + context.Request.QueryString["file"] + ".js");
-            Respond(context, jsText, 200, "text/javascript; charset=UTF-8");
+            Respond(context, jsText, 200, contentType: "text/javascript; charset=UTF-8");
         }
         catch
         {
