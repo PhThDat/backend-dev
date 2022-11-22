@@ -1,7 +1,6 @@
 ﻿using BackEndCSharp.Db;
 using BackEndCSharp.Model;
 using BackEndCSharp.Net;
-using System.Diagnostics;
 
 using NpgsqlTypes;
 

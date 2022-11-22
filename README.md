@@ -18,7 +18,5 @@ An application written in .NET C#, utilizing PostgreSQL to store data.
 # What are the URLs?
 ### Default static page:
 127.0.0.1:4000
-### Signing up:
+### User profile:
 127.0.0.1:4000/user/signup/
-### Signing in:
-127.0.0.1:4000/user/signin/
