@@ -19,4 +19,4 @@ An application written in .NET C#, utilizing PostgreSQL to store data.
 ### Default static page:
 127.0.0.1:4000
 ### User profile: 
-127.0.0.1:4000/user/signup/
+127.0.0.1:4000/user/
