@@ -4,25 +4,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <script src="http://127.0.0.1:4000/file/js?name=sign-up" defer></script>
+    <title>Sign Up</title>
 </head>
-<body>
-    <h1>Sign up</h1>
-    <label>
-        <label>Username:
-            <input id="uname-inp" type="text">
+    <body>
+        <h1>Sign up</h1>
+        <label>
+            <label>Username:
+                <input id="uname-inp" type="text">
+            </label>
+            <br><br>
+            <label>Email:
+                <input id="email-inp" type="text">
+            </label>
+            <br><br>
+            <label>Password:
+                <input id="pw-inp" type="password">
+            </label>
+            <br><br>
+            <input id="submit-btn" type="button" value="Submit">
+            <br><br>
+            Already have an account?
+            <br>
+            <a href="http://127.0.0.1:4000/file/html?name=sign-in">
+                <input type="button" value="Sign in">
+            </a>
         </label>
-        <br><br>
-        <label>Email:
-            <input id="email-inp" type="text">
-        </label>
-        <br><br>
-        <label>Password:
-            <input id="pw-inp" type="password">
-        </label>
-        <br><br>
-        <input id="submit-btn" type="button" value="Submit">
-    </label>
-</body>
-<script src="http://127.0.0.1:4000/api/js?file=sign-up"></script>
+    </body>
 </html>

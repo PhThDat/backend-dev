@@ -1,6 +1,9 @@
 ﻿using BackEndCSharp.Db;
 using BackEndCSharp.Model;
 using BackEndCSharp.Net;
+using System.Diagnostics;
+
+using NpgsqlTypes;
 
 namespace BackEndCSharp;
 
@@ -8,18 +11,18 @@ class Program
 {
     static async Task Main()
     {
-        Console.WriteLine("Server is up");
+        // AccountDb.EnsureCreated();
         List<Listener> listeners = new List<Listener>()
         {
-            new HomePageListener(4000),
-            new SignInListener(4000),
-            new SignUpListener(4000),
-            new JavaScriptApiListener(4000),
+            new RootApiListener(4000),
+            new UserApiListener(4000),
+            new FileApiListener(4000),
         };
 
         foreach (Listener listener in listeners)
             listener.StartAsync();
-        
+        Console.WriteLine("Server is up");
+
         Console.ReadKey();
     }
 }
