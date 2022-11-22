@@ -132,4 +132,4 @@ class JWTPayload
         });
     public string Base64Encoded()
         => Converter.ToBase64String(ToString());
-}
+} 

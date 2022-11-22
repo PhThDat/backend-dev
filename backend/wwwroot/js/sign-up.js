@@ -24,4 +24,4 @@ btn.addEventListener("click", async () => {
             alert(await response.text());
     }
     else alert("Please fill the form");
-});
+}); 

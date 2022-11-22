@@ -22,6 +22,6 @@ btn.addEventListener("click", async () => {
             localStorage.setItem("jwt", jwtObj.jwt);
             window.open("http://127.0.0.1:4000/file/html?name=init", "_self");
         }
-    }
+    } 
     else alert("Please fill the form");
 });

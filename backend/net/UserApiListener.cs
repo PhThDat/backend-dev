@@ -96,7 +96,7 @@ class UserApiListener : Listener
 
         string[] unamePwdPair = Converter.FromBase64String(segments[1]).Split(':');
         if (!AccountDb.UsernameExists(unamePwdPair[0]))
-        {
+        { 
             Respond(context, "", HttpStatusCode.Unauthorized);
             return;
         }

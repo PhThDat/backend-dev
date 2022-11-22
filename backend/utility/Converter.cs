@@ -13,7 +13,7 @@ static class Converter
     {
         byte[] base64EncodedBytes = System.Convert.FromBase64String(base64Str);
         return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-    }
+    } 
     /// <summary>
     /// Encoding a string to base64 one
     /// </summary>

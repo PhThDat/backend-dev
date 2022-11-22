@@ -43,7 +43,7 @@ abstract class Listener
                 {
                     Respond(context, "", HttpStatusCode.BadRequest);
                     Console.WriteLine(exp.Message);
-                }
+                } 
                 finally 
                 {
                     context.Response.Close();

@@ -15,7 +15,7 @@ const createBtn = (val, hrefVal, event = null) => {
     const title = document.getElementById("title");
     var jwt = localStorage.getItem("jwt");
 
-    if (jwt == null)
+    if (jwt == null) 
     {
         title.innerHTML = "You are unauthorized";
         createBtn("Sign in", "http://127.0.0.1:4000/file/html?name=sign-in");

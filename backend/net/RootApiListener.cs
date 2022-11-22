@@ -12,6 +12,6 @@ class RootApiListener : Listener
         });
         GET("/", (context) => {
             Respond(context, File.ReadAllBytes("wwwroot/html/index.html"), HttpStatusCode.OK, "text/html; charset=utf-8");
-        });
+        }); 
     }
 }

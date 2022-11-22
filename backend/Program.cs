@@ -7,7 +7,7 @@ using NpgsqlTypes;
 namespace BackEndCSharp;
 
 class Program
-{
+{ 
     static async Task Main()
     {
         // AccountDb.EnsureCreated();

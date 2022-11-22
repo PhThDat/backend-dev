@@ -20,4 +20,4 @@ static class Json
     /// <returns>An object of anonymous type represents the original JSON.</returns>
     public static dynamic Parse(string json)
         => JsonConvert.DeserializeObject(json);
-}
+} 
