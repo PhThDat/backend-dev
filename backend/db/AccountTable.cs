@@ -1,25 +1,31 @@
 using Npgsql;
 using NpgsqlTypes;
 using BackEndCSharp.Model;
-using System.Diagnostics;
 
 namespace BackEndCSharp.Db;
 
-static class AccountDb
+static class AccountTable
 {
     private static NpgsqlConnection connection;
-    public static string TableName;
-    public static string UsernameCol;
-    public static string EmailCol;
-    public static string PasswordCol;
-    public static string JWTKeyCol;
-    static AccountDb()
+    public static string Name;
+    public static readonly Column[] Columns;
+    public static Column UsernameCol { get => Columns[0]; }
+    public static Column EmailCol { get => Columns[1]; }
+    public static Column PasswordCol { get => Columns[2]; }
+    public static Column JWTKeyCol { get => Columns[3]; }
+    public static Column[]? PrimaryKey;
+    static AccountTable()
     {
-        TableName = "useraccount";
-        UsernameCol = "username";
-        EmailCol = "email";
-        PasswordCol = "password";
-        JWTKeyCol = "jwt";
+        Name = "useraccount";
+        Columns = new Column[4]
+        {
+            new Column("username", "VARCHAR(25)"),
+            new Column("email", "VARCHAR(50)", isUnique: true),
+            new Column("password", "CHAR(64)", isUnique: false),
+            new Column("jwt", "BYTEA", isUnique: true)
+        };
+        PrimaryKey = new Column[]{ Columns[0] };
+
         connection = new NpgsqlConnection("Server=172.20.0.2;Port=5432;Username=dat;Password=for-Thu;Database=db");
         connection.Open();
     }
@@ -31,29 +37,28 @@ static class AccountDb
         if (!TableExists())
         {
             CreateTable();
-            AddUnique($"{TableName}_{EmailCol}_key", new string[]{ EmailCol });
-            AddUnique($"{TableName}_{JWTKeyCol}_key", new string[]{ JWTKeyCol });
+            AddUnique($"{Name}_{EmailCol.Name}_key", new Column[]{ EmailCol });
+            AddUnique($"{Name}_{JWTKeyCol.Name}_key", new Column[]{ JWTKeyCol });
         }
-        bool uname, email, pwd, jwt;
-        uname = email = pwd = jwt = false;
-        if (!CorrectColumnIntegrity(ref uname, ref email, ref pwd, ref jwt))
+        bool[]? buffer = null;
+        if (!CorrectColumnIntegrity(ref buffer))
         {
             if (!uname)
             {
-                AddColumn(UsernameCol, "VARCHAR(25)");
-                AddPrimaryKey($"{TableName}_{UsernameCol}_pkey", new string[]{ UsernameCol });
+                AddColumn(UsernameCol);
+                AddPrimaryKey($"{Name}_{UsernameCol.Name}_pkey", new Column[]{ UsernameCol });
             }
             if (!email)
             {
-                AddColumn(EmailCol, "VARCHAR(50)");
-                AddUnique($"{TableName}_{EmailCol}_key", new string[]{ EmailCol });
+                AddColumn(EmailCol);
+                AddUnique($"{Name}_{EmailCol.Name}_key", new Column[]{ EmailCol });
             }
             if (!pwd)
-                AddColumn(PasswordCol, "VARCHAR(35)");
+                AddColumn(PasswordCol);
             if (!jwt)
             {
-                AddColumn(JWTKeyCol, "BYTEA");
-                AddUnique($"{TableName}_{JWTKeyCol}_key", new string[]{ JWTKeyCol });
+                AddColumn(JWTKeyCol);
+                AddUnique($"{Name}_{JWTKeyCol.Name}_key", new Column[]{ JWTKeyCol });
             }
         }
     }
@@ -64,7 +69,7 @@ static class AccountDb
     /// <returns>True on exists, otherwise false.</returns>
     public static bool UsernameExists(string username)
     {
-        string cmdText = $"SELECT {UsernameCol} FROM {TableName} WHERE {UsernameCol} = '{username}'";
+        string cmdText = $"SELECT {UsernameCol.Name} FROM {Name} WHERE {UsernameCol.Name} = '{username}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
 
         using NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -76,7 +81,7 @@ static class AccountDb
     /// <returns>True on exists, otherwise false.</returns>
     public static bool EmailExist(string email)
     {
-        string cmdText = $"SELECT {EmailCol} FROM {TableName} WHERE {EmailCol} = '{email}'";
+        string cmdText = $"SELECT {EmailCol.Name} FROM {Name} WHERE {EmailCol.Name} = '{email}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
 
         using NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -90,7 +95,7 @@ static class AccountDb
     {
         try
         {
-            string cmdText = $"INSERT INTO {TableName} ({UsernameCol}, {EmailCol}, {PasswordCol}) VALUES ('{username}', '{email}', '{encryptedPw}')";
+            string cmdText = $"INSERT INTO {Name} ({UsernameCol.Name}, {EmailCol.Name}, {PasswordCol.Name}) VALUES ('{username}', '{email}', '{encryptedPw}')";
             using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
             cmd.ExecuteNonQuery();
             return true;
@@ -108,7 +113,7 @@ static class AccountDb
     {
         try
         {
-            string cmdText = $"INSERT INTO {TableName} ({UsernameCol}, {EmailCol}, {PasswordCol}, {JWTKeyCol}) VALUES ('{username}', '{email}', '{encryptedPw}', @key)";
+            string cmdText = $"INSERT INTO {Name} ({UsernameCol.Name}, {EmailCol.Name}, {PasswordCol.Name}, {JWTKeyCol.Name}) VALUES ('{username}', '{email}', '{encryptedPw}', @key)";
             using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
             cmd.Parameters.Add("key", NpgsqlDbType.Bytea).Value = jwtKey;
             cmd.ExecuteNonQuery();
@@ -137,7 +142,7 @@ static class AccountDb
     {
         if (UsernameExists(username) && !JWTKeyExist(key))
         {
-            string cmdText = $"UPDATE {TableName} SET {JWTKeyCol} = @key WHERE {UsernameCol} = '{username}'";
+            string cmdText = $"UPDATE {Name} SET {JWTKeyCol.Name} = @key WHERE {UsernameCol.Name} = '{username}'";
             using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
             cmd.Parameters.Add("key", NpgsqlDbType.Bytea).Value = (object?)key ?? DBNull.Value;
             cmd.ExecuteNonQuery();
@@ -152,7 +157,7 @@ static class AccountDb
     /// <returns>True on exists, otherwise false.</returns>
     public static bool JWTKeyExist(byte[] key)
     {
-        string cmdText = $"SELECT {JWTKeyCol} FROM {TableName} WHERE {JWTKeyCol} = @key";
+        string cmdText = $"SELECT {JWTKeyCol.Name} FROM {Name} WHERE {JWTKeyCol.Name} = @key";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
         cmd.Parameters.Add("key", NpgsqlDbType.Bytea).Value = (object?)key ?? DBNull.Value;
 
@@ -165,7 +170,7 @@ static class AccountDb
     /// <returns>True on matching, otherwise false.</returns>
     public static bool AuthenticateAccount(string username, string encryptedPw)
     {
-        string cmdText = $"SELECT {PasswordCol} FROM {TableName} WHERE {UsernameCol} = '{username}'";
+        string cmdText = $"SELECT {PasswordCol.Name} FROM {Name} WHERE {UsernameCol.Name} = '{username}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
 
         using NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -181,7 +186,7 @@ static class AccountDb
     {
         try
         {
-            string cmdText = $"UPDATE {TableName} SET {JWTKeyCol} = NULL WHERE {UsernameCol} = '{username}'";
+            string cmdText = $"UPDATE {Name} SET {JWTKeyCol.Name} = NULL WHERE {UsernameCol.Name} = '{username}'";
             NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
             cmd.ExecuteNonQuery();
             return true;
@@ -197,7 +202,7 @@ static class AccountDb
     /// <returns>A 32-byte array of retrieved JWT key</returns>
     public static byte[] GetJWTKey(string username)
     {
-        string cmdText = $"SELECT {JWTKeyCol} FROM {TableName} WHERE {UsernameCol} = '{username}'";
+        string cmdText = $"SELECT {JWTKeyCol.Name} FROM {Name} WHERE {UsernameCol.Name} = '{username}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
 
         using NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -211,15 +216,28 @@ static class AccountDb
 
     // DML & DDL
     /// <summary>
-    /// Adds a single column with name, type. <br/>
-    /// Equivalent to "ALTER TABLE useraccount ADD {name} {type}"
+    /// Create the table to store data about accounts.
     /// </summary>
     /// <returns>True on success, otherwise false.</returns>
-    private static bool AddColumn(string name, string type)
+    private static bool CreateTable()
     {
         try
         {
-            string cmdText = $"ALTER TABLE {TableName} ADD {name} {type}";
+            string cmdText = $"CREATE TABLE {Name} (";
+            foreach (Column col in Columns)
+                cmdText += $"{col.Name} {col.Type},";
+            if (PrimaryKey != null)
+            {
+                cmdText += $"CONSTRAINT {Name}_";
+                foreach (Column col in Columns)
+                    cmdText += $"{col.Name}_";
+                cmdText += "pkey PRIMARY KEY (";
+                foreach (Column col in Columns)
+                {
+                    char seperator = col != Columns.Last() ? ',' : ')';
+                    cmdText += $"{col.Name}{seperator}";
+                }
+            }
             using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
             cmd.ExecuteNonQuery();
             return true;
@@ -230,18 +248,42 @@ static class AccountDb
         }
     }
     /// <summary>
-    /// Adds new PRIMARY KEY constraint with constraintName and affected column name(s).
+    /// Adds a single column with name, type. <br/>
+    /// Equivalent to "ALTER TABLE useraccount ADD {name} {type}"
     /// </summary>
     /// <returns>True on success, otherwise false.</returns>
-    private static bool AddPrimaryKey(string constraintName, IEnumerable<string> colNames)
+    private static bool AddColumn(string name, string type)
     {
         try
         {
-            string cmdText = $"ALTER TABLE {TableName} ADD CONSTRAINT {constraintName} PRIMARY KEY (";
-            foreach (string col in colNames)
+            string cmdText = $"ALTER TABLE {Name} ADD {name} {type}";
+            using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    /// <summary>
+    /// Add a single column
+    /// </summary>
+    /// <returns>True on success, otherwise false.</returns>
+    private static bool AddColumn(Column column) => AddColumn(column.Name, column.Type);
+    /// <summary>
+    /// Adds new PRIMARY KEY constraint with constraintName and affected column name(s).
+    /// </summary>
+    /// <returns>True on success, otherwise false.</returns>
+    private static bool AddPrimaryKey(string constraintName, IEnumerable<Column> colNames)
+    {
+        try
+        {
+            string cmdText = $"ALTER TABLE {Name} ADD CONSTRAINT {constraintName} PRIMARY KEY (";
+            foreach (Column col in colNames)
             {
-                cmdText += col;
-                if (col != colNames.Last())
+                cmdText += col.Name;
+                if (col.Name != colNames.Last().Name)
                     cmdText += ',';
             }
             cmdText += ')';
@@ -258,36 +300,18 @@ static class AccountDb
     /// Adds new UNIQUE constraint with constraintName and affected column name(s).
     /// </summary>
     /// <returns>True on success, otherwise false.</returns>
-    private static bool AddUnique(string constraintName, IEnumerable<string> colNames)
+    private static bool AddUnique(string constraintName, IEnumerable<Column> colNames)
     {
         try
         {
-            string cmdText = $"ALTER TABLE {TableName} ADD CONSTRAINT {constraintName} UNIQUE (";
-            foreach (string col in colNames)
+            string cmdText = $"ALTER TABLE {Name} ADD CONSTRAINT {constraintName} UNIQUE (";
+            foreach (Column col in colNames)
             {
-                cmdText += col;
-                if (col != colNames.Last())
+                cmdText += col.Name;
+                if (col.Name != colNames.Last().Name)
                     cmdText += ',';
             }
             cmdText += ')';
-            using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
-            cmd.ExecuteNonQuery();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-    /// <summary>
-    /// Create the table to store data about accounts.
-    /// </summary>
-    /// <returns>True on success, otherwise false.</returns>
-    private static bool CreateTable()
-    {
-        try
-        {
-            string cmdText = $"CREATE TABLE {TableName} ({UsernameCol} VARCHAR(25), {EmailCol} VARCHAR(50), {PasswordCol} VARCHAR(35), {JWTKeyCol} BYTEA, CONSTRAINT {TableName}_{UsernameCol}_pkey PRIMARY KEY ({UsernameCol}))";
             using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
             cmd.ExecuteNonQuery();
             return true;
@@ -303,7 +327,7 @@ static class AccountDb
     /// <returns>True on exists, otherwise false.</returns>
     private static bool TableExists()
     {
-        string cmdText = $"SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public' AND tablename = '{TableName}'";
+        string cmdText = $"SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public' AND tablename = '{Name}'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
 
         using NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -314,28 +338,26 @@ static class AccountDb
     /// 4 arguments indicate which column has already existed after executing the method.
     /// </summary>
     /// <returns>True on meeting the requirements, otherwise false.</returns>
-    private static bool CorrectColumnIntegrity(ref bool uname, ref bool email, ref bool password, ref bool jwt)
+    private static bool CorrectColumnIntegrity(ref bool[]? boolBuffer)
     {
         char[]? buffer = new char[8];
-        uname = email = password = jwt = false;
+        boolBuffer = new bool[Columns.Length];
         
-        string cmdText = $"SELECT column_name FROM information_schema.columns WHERE table_name = '{TableName}' AND table_schema = 'public'";
+        string cmdText = $"SELECT column_name FROM information_schema.columns WHERE table_name = '{Name}' AND table_schema = 'public'";
         using NpgsqlCommand cmd = new NpgsqlCommand(cmdText, connection);
 
         using NpgsqlDataReader reader = cmd.ExecuteReader();
+
+        int len = Columns.Length;
         while (reader.Read())
         {
-            int count = (int)reader.GetChars(0, 0, buffer, 0, 8);
+            int count = (int)reader.GetChars(0, 0, buffer, 0, Columns.Max(col => col.Name.Length));
             string col = new string(buffer.Take(count).ToArray());
-            if (col == UsernameCol)
-                uname = true;
-            else if (col == EmailCol)
-                email = true;
-            else if (col == PasswordCol)
-                password = true;
-            else if (col == JWTKeyCol)
-                jwt = true;
+
+            for (int i = 0; i < len; i++)
+                if (col == Columns[i].Name)
+                    boolBuffer[i] = true;
         }
-        return uname && email && password && jwt;
+        return boolBuffer.All(col => col);
     }
 }

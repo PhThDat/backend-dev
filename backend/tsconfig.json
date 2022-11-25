@@ -1,0 +1,17 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "removeComments": true,
+        // "noEmitOnError": true,
+        // "moduleDetection": "force",
+        "outDir": "wwwroot/js/",
+        "lib": [ 
+            "ES2022",
+            "DOM",
+        ]
+    },
+    "include": [
+        "wwwroot/ts/*",
+    ]
+}

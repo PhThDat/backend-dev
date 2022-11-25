@@ -10,7 +10,7 @@ class Program
 { 
     static async Task Main()
     {
-        // AccountDb.EnsureCreated();
+        AccountTable.EnsureCreated();
         List<Listener> listeners = new List<Listener>()
         {
             new RootApiListener(4000),

@@ -62,12 +62,12 @@ class UserApiListener : Listener
             Respond(context, "", HttpStatusCode.InternalServerError);
             return;
         }
-        if (AccountDb.UsernameExists(newAccount.Username))
+        if (AccountTable.UsernameExists(newAccount.Username))
         {
             Respond(context, "Username not available", HttpStatusCode.Conflict, "text/plain; charset=utf-8");
             return;
         }
-        else if (AccountDb.EmailExist(newAccount.Email))
+        else if (AccountTable.EmailExist(newAccount.Email))
         {
             Respond(context, "Email already taken", HttpStatusCode.Conflict, "text/plain; charset=utf-8");
             return;
@@ -95,12 +95,12 @@ class UserApiListener : Listener
         }
 
         string[] unamePwdPair = Converter.FromBase64String(segments[1]).Split(':');
-        if (!AccountDb.UsernameExists(unamePwdPair[0]))
+        if (!AccountTable.UsernameExists(unamePwdPair[0]))
         { 
             Respond(context, "", HttpStatusCode.Unauthorized);
             return;
         }
-        if (AccountDb.AuthenticateAccount(unamePwdPair[0], unamePwdPair[1]))
+        if (AccountTable.AuthenticateAccount(unamePwdPair[0], unamePwdPair[1]))
         {
             JWT jwt = CreateJWTKey(unamePwdPair[0]);
             Respond(context, Json.Stringify(new { jwt = jwt.ToString() }), HttpStatusCode.OK, "application/json");
@@ -113,7 +113,7 @@ class UserApiListener : Listener
         bool existed;
         do {
             key = JWT.RandomKey();
-            existed = AccountDb.JWTKeyExist(key);
+            existed = AccountTable.JWTKeyExist(key);
         } while (existed);
         JWT jwt = new JWT(
             new JWTHeader()
@@ -127,7 +127,7 @@ class UserApiListener : Listener
                 Sub = account.Username,
                 Iat = (ulong)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds
             }, key);
-        AccountDb.AddAccount(account, key);
+        AccountTable.AddAccount(account, key);
         return jwt;
     }
     private JWT CreateJWTKey(string username)
@@ -136,7 +136,7 @@ class UserApiListener : Listener
         bool existed;
         do {
             key = JWT.RandomKey();
-            existed = AccountDb.JWTKeyExist(key);
+            existed = AccountTable.JWTKeyExist(key);
         } while (existed);
         JWT jwt = new JWT(
             new JWTHeader()
@@ -150,7 +150,7 @@ class UserApiListener : Listener
                 Sub = username,
                 Iat = (ulong)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds
             }, key);
-        AccountDb.AddJWTKey(username, key);
+        AccountTable.AddJWTKey(username, key);
         return jwt;
     }
 }
