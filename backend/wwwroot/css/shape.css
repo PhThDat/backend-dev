@@ -1,0 +1,76 @@
+.h-100pct {
+    height: 100%;
+}
+
+.w-100pct {
+    width: 100%;
+}
+
+.w-fit {
+    width: fit-content;
+}
+
+.h-fit {
+    height: fit-content;
+}
+
+.h-200 {
+    height: 200px;
+}
+
+.w-200 {
+    width: 200px;
+}
+
+.sqr-fit {
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+.p-10 {
+    padding: 10px;
+}
+
+.pl-10 {
+    padding-left: 10px;
+}
+
+.pt-10 {
+    padding-top: 10px;
+}
+
+.pr-10 {
+    padding-right: 10px;
+}
+
+.pb-10 {
+    padding-bottom: 10px;
+}
+
+.m-0 {
+    margin: 0 !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+.b-0 {
+    border: 0 !important;
+}
+
+.bot-0 {
+    bottom: 0;
+}
+
+.round-border {
+    border-radius: 75%;
+}
+
+.pos-absolute {
+    position: absolute;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}

@@ -11,21 +11,27 @@ class UserApiListener : Listener
     protected override void Init()
     {
         GET("/", handleGET);
+        GET("/profile/", handleGETProfile);
         POST("/jwt/", handleJwtPOST);
         POST("/signup/", handleSignUpPOST);
         POST("/signin/", handleSignInPOST);
+        PUT("/avatar/", handlePUTAvatar);
     }
 
     /// <summary>
-    /// Handle GET request for html from client. Responses with 401 status code (Unauthorized) on unauthorized client.
+    /// Handle GET request for default /user/ path. Responses with 401 status code (Unauthorized) on unauthorized client.
     /// </summary>
-    private Action<HttpListenerContext> handleGET { get => (context) => {
-        Respond(context, File.ReadAllBytes("wwwroot/html/init.html"), HttpStatusCode.OK, "text/html; charset=utf-8");
-    }; }
+    private Action<HttpListenerContext> handleGET => (context)
+        => Respond(context, File.ReadAllBytes("wwwroot/html/init.html"), HttpStatusCode.OK, "text/html; charset=utf-8");
+    /// <summary>
+    /// Handle GET request for /user/profile/ path.
+    /// </summary>
+    private Action<HttpListenerContext> handleGETProfile => (context)
+        => Respond(context, File.ReadAllBytes("wwwroot/html/profile.html"), HttpStatusCode.OK, "text/html; charset=utf-8");
     /// <summary>
     /// Authorizing a client's JWT token. Responses 200 status code (OK) on matching, otherwise 401 status code (Unauthorized).
     /// </summary>
-    private Action<HttpListenerContext> handleJwtPOST { get => (context) => {
+    private Action<HttpListenerContext> handleJwtPOST => (context) => {
         HttpListenerRequest request = context.Request;
 
         string authHeader = request.Headers["Authorization"];
@@ -43,12 +49,18 @@ class UserApiListener : Listener
         }
         
         (JWTHeader, JWTPayload) headerPayload = JWT.Decode(segments[1]);
-        Respond(context, "", HttpStatusCode.OK);
-    }; }
+        if (!AccountTable.UsernameExists(headerPayload.Item2.Sub) || !AccountTable.JWTTokenMatches(headerPayload.Item2.Sub, segments[1]))
+        {
+            Respond(context, "", HttpStatusCode.Unauthorized);
+            return;
+        }
+        UserAccount? info = AccountTable.GetInfo(headerPayload.Item2.Sub);
+        Respond(context, Json.Stringify(info, nullHandling: JsonStringifyOption.IgnoreNull), HttpStatusCode.OK);
+    };
     /// <summary>
     /// Handle a sign up request from client. Responses with a JWT token on success, otherwise a 401 status code (Unauthorized).
     /// </summary>
-    private Action<HttpListenerContext> handleSignUpPOST { get => (context) => {
+    private Action<HttpListenerContext> handleSignUpPOST => (context) => {
         dynamic jsonObj = Json.Parse(ReadBody(context.Request));
         UserAccount newAccount = new UserAccount();
         try
@@ -73,12 +85,12 @@ class UserApiListener : Listener
             return;
         }
         JWT jwt = CreateJWTKey(newAccount);
-        Respond(context, Json.Stringify(new { jwt = jwt.ToString() }), HttpStatusCode.Created, "application/json");
-    }; }
+        Respond(context, Json.Stringify(new { jwt = jwt.ToString() }, nullHandling: JsonStringifyOption.IgnoreNull), HttpStatusCode.Created, "application/json");
+    };
     /// <summary>
     /// Handle sign in request from client.Responses with a JWT token on success, otherwise a 401 status code (Unauthorized).
     /// </summary>
-    private Action<HttpListenerContext> handleSignInPOST { get => (context) => {
+    private Action<HttpListenerContext> handleSignInPOST => (context) => {
         HttpListenerRequest request = context.Request;
         string? authHeader = request.Headers["Authorization"];
         if (authHeader == null)
@@ -106,7 +118,40 @@ class UserApiListener : Listener
             Respond(context, Json.Stringify(new { jwt = jwt.ToString() }), HttpStatusCode.OK, "application/json");
         }
         else Respond(context, "", HttpStatusCode.Unauthorized);
-    }; }
+    };
+    /// <summary>
+    /// Handles PUT request for updating or creating user account's avatar
+    /// </summary>
+    private Action<HttpListenerContext> handlePUTAvatar => (context) => {
+        HttpListenerRequest request = context.Request;
+        string? authHeader = request.Headers["Authorization"];
+        if (authHeader == null)
+        {
+            Respond(context, "", HttpStatusCode.Unauthorized);
+            return;
+        }
+
+        string[] authSegments = authHeader.Split(' ');
+        if (authSegments[0] != "Bearer")
+        {
+            Respond(context, "", HttpStatusCode.Unauthorized);
+            return;
+        }
+
+        (JWTHeader, JWTPayload) headerPayload = JWT.Decode(authSegments[1]);
+        if (!AccountTable.UsernameExists(headerPayload.Item2.Sub) || !AccountTable.JWTTokenMatches(headerPayload.Item2.Sub, authSegments[1]))
+        {
+            Respond(context, "", HttpStatusCode.Unauthorized);
+            return;
+        }
+
+        using MemoryStream memStream = new MemoryStream();
+        request.InputStream.CopyTo(memStream);
+        bool exists = File.Exists($"wwwroot/images/user/avatar/{headerPayload.Item2.Sub}.png");
+
+        File.WriteAllBytes($"wwwroot/images/user/avatar/{headerPayload.Item2.Sub}.png", memStream.GetBuffer());
+        Respond(context, "", exists ? HttpStatusCode.OK : HttpStatusCode.Created, null);
+    };
     private JWT CreateJWTKey(UserAccount account)
     {
         byte[] key;
@@ -150,7 +195,7 @@ class UserApiListener : Listener
                 Sub = username,
                 Iat = (ulong)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds
             }, key);
-        AccountTable.AddJWTKey(username, key);
+        AccountTable.UpdateJWTKey(username, key);
         return jwt;
     }
 }

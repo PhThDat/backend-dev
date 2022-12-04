@@ -4,10 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=general">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=flex">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=shape">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=text">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=color">
     <script src="http://127.0.0.1:4000/file/js?name=profile" defer></script>
     <title>Document</title>
 </head>
 <body>
-    <h1 id="title"></h1>
+    <header class="flex bg-blue font-size-title flex-justify-between pl-10 pr-10">
+        <p class="lineheight-title m-0">For Thu</p>
+    </header>
+    <div id="content" class="w-100pct h-fit p-10">
+        <div class="w-200 h-200 round-border overflow-hidden">
+            <img id="avatar" class="w-100pct">
+        </div>
+        <h2 id="uname"></h2>
+    </div>
 </body> 
 </html> 

@@ -36,31 +36,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 var init = function () { return __awaiter(_this, void 0, void 0, function () {
-    var jwt, req, response;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var jwt, req_1, response, _a, accountObj, _b, _c, req_2, res;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
                 jwt = localStorage.getItem("jwt");
                 if (!(jwt == null)) return [3, 1];
                 window.open("http://127.0.0.1:4000/file/html?name=sign-in", "_self");
-                return [3, 3];
+                return [3, 7];
             case 1:
-                req = {
+                req_1 = {
                     method: "POST",
                     headers: [["Authorization", "Bearer ".concat(jwt)]]
                 };
-                return [4, fetch("http://127.0.0.1:4000/user/jwt/", req)];
+                return [4, fetch("http://127.0.0.1:4000/user/jwt/", req_1)];
             case 2:
-                response = _a.sent();
-                switch (response.status) {
-                    case 401:
-                        window.open("http://127.0.0.1:4000/file/html?name=sign-in", "_self");
-                        break;
-                    case 200:
-                        window.open("http://127.0.0.1:4000/file/html?name=profile", "_self");
+                response = _d.sent();
+                _a = response.status;
+                switch (_a) {
+                    case 401: return [3, 3];
+                    case 200: return [3, 4];
                 }
-                _a.label = 3;
-            case 3: return [2];
+                return [3, 7];
+            case 3:
+                window.open("http://127.0.0.1:4000/user/signin/", "_self");
+                return [3, 7];
+            case 4:
+                _c = (_b = JSON).parse;
+                return [4, response.text()];
+            case 5:
+                accountObj = _c.apply(_b, [_d.sent()]);
+                req_2 = {
+                    method: "GET",
+                    headers: [["Authorization", "Bearer ".concat(jwt)]]
+                };
+                return [4, fetch("http://127.0.0.1:4000/user/profile?username=".concat(accountObj.username), req_2)];
+            case 6:
+                res = _d.sent();
+                _d.label = 7;
+            case 7: return [2];
         }
     });
 }); };

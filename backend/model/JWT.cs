@@ -7,9 +7,9 @@ namespace BackEndCSharp.Model;
 
 class JWT
 {
-    public JWTHeader Header { get => header; }
-    public JWTPayload Payload { get => payload; }
-    public string Signature { get => stringForm[2]; }
+    public JWTHeader Header => header;
+    public JWTPayload Payload => payload;
+    public string Signature => stringForm[2];
     private JWTHeader header;
     private JWTPayload payload;
     private string[] stringForm;

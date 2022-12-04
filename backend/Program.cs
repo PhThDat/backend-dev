@@ -11,10 +11,12 @@ class Program
     static async Task Main()
     {
         AccountTable.EnsureCreated();
+        GoodsTable.EnsureCreated();
         List<Listener> listeners = new List<Listener>()
         {
             new RootApiListener(4000),
             new UserApiListener(4000),
+            new ProductApiListener(4000),
             new FileApiListener(4000),
         };
 

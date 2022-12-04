@@ -42,7 +42,7 @@ abstract class Listener
                 catch (Exception exp)
                 {
                     Respond(context, "", HttpStatusCode.BadRequest);
-                    Console.WriteLine(exp.Message);
+                    Console.WriteLine(exp.ToString());
                 } 
                 finally 
                 {
@@ -56,13 +56,14 @@ abstract class Listener
     /// <summary>
     /// Response to a HTTP context with a string.
     /// </summary>
-    protected void Respond(HttpListenerContext context, string msg, HttpStatusCode statusCode = HttpStatusCode.OK, string contentType = "text/html; charset=utf-8")
+    protected void Respond(HttpListenerContext context, string msg, HttpStatusCode statusCode = HttpStatusCode.OK, string? contentType = null)
     {
         HttpListenerResponse response = context.Response;
         byte[] buffer = System.Text.Encoding.UTF8.GetBytes(msg);
 
         response.StatusCode = (int)statusCode;
-        response.ContentType = contentType;
+        if (contentType != null)
+            response.ContentType = contentType;
         response.ContentLength64 = buffer.Length;
         response.OutputStream.Write(buffer);
         response.OutputStream.Close();

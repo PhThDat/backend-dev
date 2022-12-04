@@ -55,7 +55,7 @@ var sha256 = function (message) { return __awaiter(_this, void 0, void 0, functi
     });
 }); };
 btn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
-    var encryptedPw, req, response, _a, jwtObj, _b, _c, _d;
+    var encryptedPw, req_1, response, _a, jwtObj, _b, _c, _d;
     return __generator(this, function (_e) {
         switch (_e.label) {
             case 0:
@@ -63,12 +63,12 @@ btn.addEventListener("click", function () { return __awaiter(_this, void 0, void
                 return [4, sha256(pwInp.value)];
             case 1:
                 encryptedPw = _e.sent();
-                req = {
+                req_1 = {
                     method: "POST",
                     headers: [["Content-Type", "application/json"]],
                     body: JSON.stringify({ username: unameInp.value, email: emailInp.value, password: encryptedPw })
                 };
-                return [4, fetch("http://127.0.0.1:4000/user/signup/", req)];
+                return [4, fetch("http://127.0.0.1:4000/user/signup/", req_1)];
             case 2:
                 response = _e.sent();
                 _a = response.status;

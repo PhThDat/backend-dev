@@ -12,10 +12,15 @@ const init = async () => {
         switch (response.status)
         {
             case 401:
-                window.open("http://127.0.0.1:4000/file/html?name=sign-in", "_self");
+                window.open("http://127.0.0.1:4000/user/signin/", "_self");
                 break;
             case 200:
-                window.open("http://127.0.0.1:4000/file/html?name=profile", "_self");
+                let accountObj = JSON.parse(await response.text());
+                let req: RequestInit = {
+                    method: "GET",
+                    headers: [[ "Authorization", `Bearer ${jwt}`]],
+                }
+                let res = await fetch(`http://127.0.0.1:4000/user/profile?username=${accountObj.username}`, req);
         }
     }
 }

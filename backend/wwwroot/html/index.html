@@ -4,12 +4,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=text">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=color">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=general">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=shape">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=flex">
+    <link rel="stylesheet" href="http://127.0.0.1:4000/file/css?name=grid">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;1,200&family=Fredoka:wght@500;600&family=Inter:wght@300;400&family=Montserrat+Alternates:wght@700&family=Nanum+Gothic&family=Poppins&display=swap">
+    <script src="http://127.0.0.1:4000/file/js?name=index" defer></script>
     <title>Homepage</title>
 </head>
 <body>
-    <h1>I wish to take care of Thu</h1>
-    <a href="http://127.0.0.1:4000/file/html?name=profile">
-        <input type="button" value="View your profile">
-    </a> 
+    <header class="flex bg-blue font-size-title flex-justify-between pl-10 pr-10">
+        <p class="lineheight-title m-0">For Thu</p>
+        <a id="user-section" class="h-100pct w-fit decor-none font-size-para pl-10 pr-10 align-self-center text-dark"></a>
+    </header>
+    <div id="content" class="h-fit w-100pct">
+        <section id="product-list" class="grid gap-10 justify-content-evenly">
+        </section>
+    </div>
+    <footer class="pl-10 pr-10">
+        <p class="bot-0 lineheight-title font-size-para m-0">I wish to take care of Thu</p>
+    </footer>
 </body>
 </html>
